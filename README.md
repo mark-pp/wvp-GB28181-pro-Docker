@@ -9,11 +9,11 @@
 git clone https://github.com/mark-pp/wvp-GB28181-pro-Docker.git
 ```
 
-### 第二步 创建语音对讲需要的测试证书
+### 第二步 创建HTTPS证书
 ```bash
 cd wvp-GB28181-pro-Docker/tools
 chmod -R 777 ssl.sh
-./ssh.sh
+./ssl.sh
 ```
 这里创建证书需要使用到`keytool`，请自行安装OpenJDK。
 
