@@ -1,0 +1,100 @@
+version: "3"
+services:
+  mysql:
+    image: mysql:8
+    restart: always
+    networks:
+      - network-wvp
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./wvp/sql/data:/var/lib/mysql
+      - ./wvp/sql/init:/docker-entrypoint-initdb.d/
+
+  redis:
+    image: redis
+    restart: always
+    networks:
+      - network-wvp
+    volumes:
+      - ./redis/redis.conf:/etc/redis/redis_default.conf
+      - ./redis/data/:/data
+    environment:
+      TZ: "Asia/Shanghai"
+    command: redis-server /etc/redis/redis_default.conf --appendonly yes
+    depends_on:
+      - mysql
+    
+  zlmediakit:
+    image: zlmediakit/zlmediakit:master
+    restart: always
+    networks:
+      - network-wvp
+    environment:
+      TZ: "Asia/Shanghai"
+    ports:
+      - "1935:1935"
+      - "8080:80"
+      - "8443:443"
+      - "8554:554"
+      - "10000:10000"
+      - "10000:10000/udp"
+      - "8000:8000"
+      - "8000:8000/udp"
+      - "30000-30100:30000-30100/tcp"
+      - "30000-30100:30000-30100/udp"
+    volumes:
+      - ./zlmediakit/config:/opt/media/conf/
+
+  wvp:
+    build:
+      context: ./wvp
+      args:
+        gitUrl: "https://gitee.com/pan648540858"
+        # zlmGitUrl: "https://gitee.com/xia-chu/ZLMediaKit"
+    restart: always
+    networks:
+      - network-wvp
+    ports:
+      - "5060:5060"
+      - "5060:5060/udp"
+      - "18080:18080"
+      - "18081:18081"
+      - "80:80"
+      # - "8000:8000"
+      # - "8000:8000/udp"
+      # - "8443:8443"
+      # - "8443:8443/udp"
+      # - "10000:10000/tcp"
+      # - "10000:10000/udp"
+      # - "30000-30100:30000-30100/tcp"
+      # - "30000-30100:30000-30100/udp"
+    volumes:
+      - ./video:/opt/media/www/record/
+      - ./logs/wvp:/opt/wvp/logs/
+      - ./logs/assist:/opt/assist/logs/
+    depends_on:
+      - redis
+      - mysql
+      - zlmediakit
+    environment:
+      TZ: "Asia/Shanghai"
+      # [必须修改] 本机的IP
+      WVP_HOST: 192.168.54.99
+      WVP_PWD: admin123
+      WVP_DOMAIN: 4401020049
+      WVP_ID: 44010200492000000001
+      REDIS_HOST: redis
+      MEDIA_HOST: zlmediakit
+      REDIS_PORT: 6379
+      REDIS_DB: 6
+      REDIS_PWD: root
+      ASSIST_JVM_CONFIG: -Xms128m -Xmx256m
+      WVP_JVM_CONFIG: -Xms128m -Xmx256m
+      ASSIST_CONFIG:
+      WVP_CONFIG:
+
+networks:
+  network-wvp:
