@@ -69,6 +69,12 @@ echo "创建存放证书文件夹------------->"
 now=$(date +"%Y%m%d_%H%M%S")
 # 创建以当前时间命名的文件夹
 mkdir "$now"
+if [ ! -d "../wvp/resource/" ];then
+    mkdir ../wvp/resource/
+fi
+if [ ! -d "../zlmediakit/resource/" ];then
+    mkdir ../zlmediakit/resource/
+fi
 
 cp wvp.jks ../wvp/resource/
 cp default.pem ../zlmediakit/resource/
