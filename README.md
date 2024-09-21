@@ -9,7 +9,7 @@
 git clone https://github.com/mark-pp/wvp-GB28181-pro-Docker.git
 ```
 
-### 第二步 创建HTTPS证书
+### 第二步 创建HTTPS测试证书
 ```bash
 cd wvp-GB28181-pro-Docker/tools
 chmod -R 777 ssl.sh
